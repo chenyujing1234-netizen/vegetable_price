@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: timescale/timescaledb:2.16.1-pg16
+    container_name: veg-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vegdb
+      POSTGRES_USER: veg
+      POSTGRES_PASSWORD: vegpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - veg-pgdata:/var/lib/postgresql/data
+      - ./timescale-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U veg -d vegdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: veg-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - veg-redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ..
+      dockerfile: infra/backend.Dockerfile
+    container_name: veg-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://veg:vegpass@postgres:5432/vegdb
+      SYNC_DATABASE_URL: postgresql+psycopg://veg:vegpass@postgres:5432/vegdb
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    profiles: ["full"]
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: infra/frontend.Dockerfile
+    container_name: veg-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+    ports:
+      - "3000:3000"
+    profiles: ["full"]
+
+volumes:
+  veg-pgdata:
+  veg-redisdata:

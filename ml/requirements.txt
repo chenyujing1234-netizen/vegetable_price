@@ -1,0 +1,17 @@
+pandas==2.2.3
+numpy==1.26.4
+scikit-learn==1.5.2
+prophet==1.1.5
+sqlalchemy==2.0.35
+psycopg[binary]==3.2.3
+typer==0.12.5
+loguru==0.7.2
+joblib==1.4.2
+
+# 高级模型 (可选，体积较大)
+torch==2.4.1
+darts==0.30.0
+
+# NLP (可选)
+sentence-transformers==3.1.1
+hanlp==2.1.0b65
