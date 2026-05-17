@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FeatureBadges } from "@/components/layout/FeatureBadges";
+import { HeroBanner } from "@/components/layout/HeroBanner";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatCard } from "@/components/layout/StatCard";
 import { PriceLineChart } from "@/components/charts/PriceLineChart";
@@ -53,6 +55,7 @@ export default function HomePage() {
 
   return (
     <div>
+      <HeroBanner />
       <PageHeader
         title={summary ? `${summary.product_name} 价格智算总览` : "价格智算总览"}
         description={
@@ -60,6 +63,7 @@ export default function HomePage() {
             ? `数据更新至 ${summary.as_of} · 基于 ${summary.market_coverage} 个监测市场`
             : "整合价格、天气、政策、新闻、种植面积五大维度，给出可解释的预测"
         }
+        action={<FeatureBadges />}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
