@@ -4,46 +4,67 @@ import { Github, Gift, Sprout } from "lucide-react";
 
 const ITEMS = [
   {
-    label: "开源",
-    icon: Github,
-    cls: "bg-emerald-50 text-emerald-700 ring-emerald-200 hover:bg-emerald-100",
-    tip: "代码已开源在 Gitee，欢迎共建",
-    href: "https://gitee.com/chenyujing/vegetable",
-  },
-  {
     label: "免费",
+    sub: "无付费墙",
     icon: Gift,
-    cls: "bg-sky-50 text-sky-700 ring-sky-200 hover:bg-sky-100",
+    cls: "from-sky-500 to-sky-600 ring-sky-300/60 shadow-sky-500/20",
+    dot: "bg-sky-200",
     tip: "完全免费使用，无需付费墙",
   },
   {
+    label: "开源",
+    sub: "代码透明",
+    icon: Github,
+    cls: "from-emerald-500 to-emerald-600 ring-emerald-300/60 shadow-emerald-500/20",
+    dot: "bg-emerald-200",
+    tip: "代码已开源在 Gitee/GitHub，欢迎共建",
+    href: "https://gitee.com/chenyujing/vegetable",
+  },
+  {
     label: "助农",
+    sub: "为田间地头而生",
     icon: Sprout,
-    cls: "bg-amber-50 text-amber-700 ring-amber-200 hover:bg-amber-100",
-    tip: "破除信息不对称，助力田间地头",
+    cls: "from-amber-500 to-amber-600 ring-amber-300/60 shadow-amber-500/20",
+    dot: "bg-amber-200",
+    tip: "破除信息不对称，让信息回到田间地头",
   },
 ] as const;
 
 export function FeatureBadges() {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {ITEMS.map(({ label, icon: Icon, cls, tip, href }) => {
+    <div className="flex flex-wrap items-stretch gap-3 mb-5">
+      {ITEMS.map(({ label, sub, icon: Icon, cls, dot, tip, href }) => {
         const content = (
           <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1
-                        text-xs font-semibold ring-1 ring-inset transition-colors ${cls}`}
+            className={`group relative inline-flex items-center gap-2.5 rounded-xl
+                        bg-gradient-to-br ${cls}
+                        px-4 py-2.5 text-white
+                        ring-1 ring-inset shadow-md
+                        transition-all duration-200
+                        hover:-translate-y-0.5 hover:shadow-lg`}
             title={tip}
           >
-            <Icon className="w-3.5 h-3.5" strokeWidth={2.2} />
-            {label}
+            <span className="relative flex h-2 w-2">
+              <span
+                className={`absolute inline-flex h-full w-full animate-ping rounded-full ${dot} opacity-75`}
+              />
+              <span className={`relative inline-flex h-2 w-2 rounded-full ${dot}`} />
+            </span>
+            <Icon className="w-5 h-5" strokeWidth={2.2} aria-hidden />
+            <span className="flex flex-col leading-tight">
+              <span className="text-base font-bold tracking-wide">{label}</span>
+              <span className="text-[10px] font-medium text-white/80">{sub}</span>
+            </span>
           </span>
         );
         return href ? (
-          <a key={label} href={href} target="_blank" rel="noreferrer">
+          <a key={label} href={href} target="_blank" rel="noreferrer" className="flex">
             {content}
           </a>
         ) : (
-          <span key={label}>{content}</span>
+          <span key={label} className="flex">
+            {content}
+          </span>
         );
       })}
     </div>
