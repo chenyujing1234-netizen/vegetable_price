@@ -1,4 +1,13 @@
+"use client";
+
 import Image from "next/image";
+import { Typewriter } from "@/components/Typewriter";
+
+const HEADLINES = [
+  "看清价格 · 预读未来 30 天走势",
+  "帮你做主：这茬到底该不该种？",
+  "让一年的辛苦，不再烂在田里",
+];
 
 export function HeroBanner() {
   return (
@@ -27,26 +36,35 @@ export function HeroBanner() {
 
         <div className="absolute inset-y-0 left-0 right-0 md:right-auto
                         flex flex-col justify-center
-                        px-5 md:px-10 max-w-xl text-white">
+                        px-5 md:px-10 max-w-2xl text-white">
           <p className="text-[11px] md:text-xs uppercase tracking-[0.18em]
                         text-amber-200/90 font-semibold">
             From Farm · 给田间地头的工具
           </p>
-          <h2 className="text-xl md:text-3xl font-bold mt-2 leading-snug drop-shadow">
-            让每一筐西红柿，
-            <br />
-            都在最值钱的时刻被收购
+
+          {/* 主标题：打字机轮播 3 句话，对应网站三大目的
+              加 min-h 防止文字增删时布局抖动 */}
+          <h2 className="mt-2 text-xl md:text-3xl font-bold leading-snug drop-shadow
+                         min-h-[2.4em] md:min-h-[1.4em]">
+            <Typewriter phrases={HEADLINES} />
           </h2>
-          <p className="text-sm md:text-base text-white/90 mt-3 max-w-md leading-relaxed
+
+          <p className="text-sm md:text-base text-white/90 mt-3 max-w-xl leading-relaxed
                         drop-shadow-sm">
-            整合 12 个批发市场实时价格、本地气象、政策动态与种植面积数据，
-            给农户一个"该不该种、什么时候卖"的清楚答案。
+            实时呈现全国 12 个主流批发市场的蔬菜价格，预测未来走势，
+            告诉农户该不该种、什么时候卖，让一年的汗水都换成实实在在的收入。
           </p>
+
           <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 rounded-full
                              bg-white/15 backdrop-blur px-3 py-1
                              ring-1 ring-white/25">
-              · 实时价格 · 30 天预测
+              · 价格行情 · 30 天预测
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full
+                             bg-white/15 backdrop-blur px-3 py-1
+                             ring-1 ring-white/25">
+              · 防亏增收 · 决策辅助
             </span>
             <span className="inline-flex items-center gap-1 rounded-full
                              bg-white/15 backdrop-blur px-3 py-1
