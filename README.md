@@ -9,6 +9,7 @@
 | | |
 |---|---|
 | 🌐 在线试用 | <http://124.221.115.174:3000/> |
+| 📖 我们的故事 | <http://124.221.115.174:3000/story> · [让一年的辛苦，不再烂在田里 →](http://124.221.115.174:3000/story) |
 | 💻 源代码 | <https://github.com/chenyujing1234-netizen/vegetable_price> |
 | 📦 镜像源 | <https://gitee.com/chenyujing/vegetable> |
 | 🪪 协议 | MIT，可自由商用 |
