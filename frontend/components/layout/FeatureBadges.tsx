@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Github, Gift, Sprout } from "lucide-react";
 
 const ITEMS = [
@@ -17,8 +18,8 @@ const ITEMS = [
     icon: Github,
     cls: "from-emerald-500 to-emerald-600 ring-emerald-300/60 shadow-emerald-500/20",
     dot: "bg-emerald-200",
-    tip: "代码已开源在 Gitee/GitHub，欢迎共建",
-    href: "https://gitee.com/chenyujing/vegetable",
+    tip: "代码已开源在 GitHub，点击查看仓库",
+    href: "https://github.com/chenyujing1234-netizen/vegetable_price",
   },
   {
     label: "助农",
@@ -26,7 +27,8 @@ const ITEMS = [
     icon: Sprout,
     cls: "from-amber-500 to-amber-600 ring-amber-300/60 shadow-amber-500/20",
     dot: "bg-amber-200",
-    tip: "破除信息不对称，让信息回到田间地头",
+    tip: "点击阅读：我做这个网站的初心",
+    href: "/story",
   },
 ] as const;
 
@@ -57,14 +59,28 @@ export function FeatureBadges() {
             </span>
           </span>
         );
-        return href ? (
-          <a key={label} href={href} target="_blank" rel="noreferrer" className="flex">
+        if (!href) {
+          return (
+            <span key={label} className="flex">
+              {content}
+            </span>
+          );
+        }
+        const external = /^https?:\/\//.test(href);
+        return external ? (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="flex"
+          >
             {content}
           </a>
         ) : (
-          <span key={label} className="flex">
+          <Link key={label} href={href} className="flex">
             {content}
-          </span>
+          </Link>
         );
       })}
     </div>
