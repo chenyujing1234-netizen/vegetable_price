@@ -126,7 +126,44 @@ export type News = {
   sentiment_score: number | null;
   sentiment_label: string | null;
   keywords: string[];
+  analysis_status?: string;
+  analysis_summary?: string | null;
+  has_analysis?: boolean;
 };
+
+export type NewsAnalysisDetail = {
+  price_impact: "likely_up" | "likely_down" | "neutral";
+  price_impact_reason: string;
+  sentiment_label: string;
+  sentiment_score: number;
+  mentioned_products: string[];
+  mentioned_products_cn: string[];
+  key_factors: { id: string; name: string; evidence: string }[];
+  farmer_advice: string;
+  method: string;
+  disclaimer: string;
+};
+
+export type NewsAnalyzeResult = {
+  id: number;
+  title: string;
+  analysis_status: string;
+  analysis_summary: string | null;
+  analysis_detail: NewsAnalysisDetail | null;
+  sentiment_label: string | null;
+  sentiment_score: number | null;
+  analyzed_at: string | null;
+  message: string;
+};
+
+export async function analyzeNews(id: number): Promise<NewsAnalyzeResult> {
+  const res = await fetch(`/api/news/${id}/analyze`, { method: "POST" });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`解读失败 ${res.status}: ${text}`);
+  }
+  return res.json();
+}
 
 export type Policy = {
   id: number;

@@ -96,6 +96,44 @@ make seed  # 灌入示例数据
 make dev   # 同时启动后端和前端
 ```
 
+## 扩展蔬菜品类
+
+后端以 `Product` 表统一管理品类，前端各页面通过右上角**品类下拉框**切换（选择会保存在浏览器 localStorage）。
+
+### 当前已内置品类
+
+西红柿、黄瓜、辣椒、土豆、大白菜、茄子、小白菜、西兰花（共 8 种）。
+
+### 新增一个品类（3 步）
+
+**1. 在 `backend/app/seed/seed_data.py` 的 `PRODUCTS` 列表追加一行：**
+
+```python
+{"code": "garlic", "name": "大蒜", "category": "vegetable", "spec": "普通", "unit": "kg"},
+```
+
+并在 `PRODUCT_PRICE_FACTORS` 里设置相对西红柿的合成价格系数（仅 seed 演示数据用）：
+
+```python
+"garlic": 1.8,
+```
+
+**2. 增量入库（不会清空已有数据）：**
+
+```bash
+cd backend
+python -m app.seed.seed_products   # 写入新品类 + 补齐 3 年历史价格
+python -m app.seed.seed_catchup    # 可选：把所有市场/品类价格补到今天
+```
+
+**3. 刷新前端** —— 下拉框会自动出现新品类，无需改前端代码。
+
+### 接入真实数据
+
+- 价格：在 `crawlers/price/` 增加对应爬虫，或对接农业农村部 / 21food 等数据源
+- 新闻：在 `crawlers/news/` 的关键词列表里加入新品类名称
+- 种植面积：在 `SEED_CROPLAND` 或 GEE 模块里按 `region_code + product_id` 扩展
+
 ## License
 
 MIT

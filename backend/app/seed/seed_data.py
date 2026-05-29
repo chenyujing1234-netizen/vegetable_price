@@ -51,7 +51,23 @@ PRODUCTS: list[dict] = [
     {"code": "cucumber", "name": "黄瓜", "category": "vegetable", "spec": "普通", "unit": "kg"},
     {"code": "chili", "name": "辣椒", "category": "vegetable", "spec": "尖椒", "unit": "kg"},
     {"code": "potato", "name": "土豆", "category": "vegetable", "spec": "普通", "unit": "kg"},
+    {"code": "cabbage", "name": "大白菜", "category": "vegetable", "spec": "普通", "unit": "kg"},
+    {"code": "eggplant", "name": "茄子", "category": "vegetable", "spec": "紫皮", "unit": "kg"},
+    {"code": "pakchoi", "name": "小白菜", "category": "vegetable", "spec": "普通", "unit": "kg"},
+    {"code": "broccoli", "name": "西兰花", "category": "vegetable", "spec": "普通", "unit": "kg"},
 ]
+
+# 各品类相对西红柿基准价的合成系数（用于 seed 数据生成）
+PRODUCT_PRICE_FACTORS: dict[str, float] = {
+    "tomato": 1.0,
+    "cucumber": 0.95,
+    "chili": 1.6,
+    "potato": 0.55,
+    "cabbage": 0.42,
+    "eggplant": 0.88,
+    "pakchoi": 0.48,
+    "broccoli": 1.25,
+}
 
 
 # 不同市场的基础价格水平（产区低、销区高）
@@ -93,8 +109,7 @@ def synth_tomato_price(market_code: str, d: date, base: float) -> tuple[float, f
 
 
 def synth_other_veg_price(product_code: str, market_code: str, d: date, base_tomato: float) -> tuple[float, float, float]:
-    factors = {"cucumber": 0.95, "chili": 1.6, "potato": 0.55}
-    f = factors.get(product_code, 1.0)
+    f = PRODUCT_PRICE_FACTORS.get(product_code, 1.0)
     low, avg, high = synth_tomato_price(market_code + product_code, d, base_tomato * f)
     return low, avg, high
 

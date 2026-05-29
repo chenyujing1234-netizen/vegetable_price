@@ -5,11 +5,12 @@ import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { ProductPicker } from "@/components/layout/ProductPicker";
+import { useSelectedProduct } from "@/lib/useSelectedProduct";
 import {
   type CorrelationReport,
   type FactorOverview,
   type Market,
-  type Product,
   useApi,
 } from "@/lib/api";
 
@@ -42,11 +43,9 @@ type GrangerResult = {
 };
 
 export default function FactorsPage() {
-  const { data: products } = useApi<Product[]>("/api/markets/products");
+  const { products, productId, product, setProductId } = useSelectedProduct();
   const { data: markets } = useApi<Market[]>("/api/markets");
-
-  const tomato = products?.find((p) => p.code === "tomato");
-  const productId = tomato?.id;
+  const productCode = product?.code ?? "tomato";
 
   const shouguang = markets?.find((m) => m.code === "shouguang");
   const [marketId, setMarketId] = useState<number | null>(null);
@@ -64,7 +63,7 @@ export default function FactorsPage() {
 
   const { data: events } = useApi<EventStudyRow[]>(
     productId && activeMarket
-      ? `/api/factors/event-study/policy?product_id=${productId}&market_id=${activeMarket.id}&product_code=tomato&window=30`
+      ? `/api/factors/event-study/policy?product_id=${productId}&market_id=${activeMarket.id}&product_code=${productCode}&window=30`
       : null
   );
 
@@ -79,6 +78,11 @@ export default function FactorsPage() {
       <PageHeader
         title="影响因子分析"
         description="基于学术研究的影响因子框架 + 实时数据相关性、格兰杰因果与事件研究"
+        action={
+          products?.length ? (
+            <ProductPicker products={products} value={productId} onChange={setProductId} />
+          ) : null
+        }
       />
 
       <Card className="mb-4">

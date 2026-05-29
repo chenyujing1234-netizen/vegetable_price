@@ -19,6 +19,11 @@ from common.db import session_scope
 from common.http import get_text
 from policy.keywords import detect_products, extract_keywords
 
+try:
+    from news.sources import FIXED_NEWS_SOURCES, get_source
+except ImportError:
+    from sources import FIXED_NEWS_SOURCES, get_source  # type: ignore
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "backend")))
 from app.models import News  # noqa: E402
 from common.upsert import upsert_many  # noqa: E402
@@ -104,17 +109,45 @@ def basic_sentiment(text: str) -> tuple[str, float]:
     return label, round(score, 3)
 
 
+def search_site_news(source_id: str, keyword: str, pages: int = 1) -> list[dict]:
+    """在固定来源域名内搜索（百度 news site: 语法）"""
+    src = get_source(source_id)
+    if not src:
+        logger.warning(f"unknown source: {source_id}")
+        return []
+    query = f"site:{src.domain} {keyword}"
+    rows = search_baidu_news(query, pages=pages)
+    for r in rows:
+        r["source"] = src.name
+    return rows
+
+
 @app.command()
 def run(
     keywords: list[str] = typer.Option(["蔬菜价格", "西红柿 批发", "菜篮子"]),
     pages: int = typer.Option(2),
+    sources: list[str] = typer.Option(
+        [],
+        help="固定来源 id：farmer, agri, nfncb, xinhua, sina；为空则全网百度新闻",
+    ),
     dry_run: bool = typer.Option(False),
 ):
     all_rows: list[dict] = []
-    for k in keywords:
-        rows = search_baidu_news(k, pages=pages)
-        logger.info(f"'{k}': {len(rows)} items")
-        all_rows.extend(rows)
+    if sources:
+        for sid in sources:
+            src = get_source(sid)
+            if not src:
+                continue
+            kws = keywords or list(src.default_keywords)
+            for k in kws:
+                rows = search_site_news(sid, k, pages=pages)
+                logger.info(f"[{src.name}] '{k}': {len(rows)} items")
+                all_rows.extend(rows)
+    else:
+        for k in keywords:
+            rows = search_baidu_news(k, pages=pages)
+            logger.info(f"'{k}': {len(rows)} items")
+            all_rows.extend(rows)
 
     seen = set()
     dedup = []

@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { FeatureBadges } from "@/components/layout/FeatureBadges";
 import { HeroBanner } from "@/components/layout/HeroBanner";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { ProductPicker } from "@/components/layout/ProductPicker";
 import { StatCard } from "@/components/layout/StatCard";
+import { useSelectedProduct } from "@/lib/useSelectedProduct";
 import { PriceLineChart } from "@/components/charts/PriceLineChart";
 import {
   type DashboardSummary,
@@ -16,21 +18,18 @@ import {
   type Policy,
   type PriceLatest,
   type PriceSeries,
-  type Product,
   useApi,
 } from "@/lib/api";
 import { formatPct, formatPrice, pctClass } from "@/lib/utils";
 
 export default function HomePage() {
-  const { data: products } = useApi<Product[]>("/api/markets/products");
+  const { products, productId, product, setProductId } = useSelectedProduct();
   const { data: markets } = useApi<Market[]>("/api/markets");
-
-  const tomato = products?.find((p) => p.code === "tomato");
-  const productId = tomato?.id;
 
   const defaultMarket = markets?.find((m) => m.code === "shouguang") ?? markets?.[0];
   const [marketId, setMarketId] = useState<number | null>(null);
   const activeMarketId = marketId ?? defaultMarket?.id ?? null;
+  const productCode = product?.code ?? "tomato";
 
   const { data: summary } = useApi<DashboardSummary>(
     productId ? `/api/analytics/dashboard?product_id=${productId}` : null
@@ -48,9 +47,11 @@ export default function HomePage() {
       ? `/api/predictions/forecast?product_id=${productId}&market_id=${activeMarketId}&horizon_days=30`
       : null
   );
-  const { data: news } = useApi<News[]>(productId ? `/api/news?product=tomato&days=60&limit=6` : null);
+  const { data: news } = useApi<News[]>(
+    productId ? `/api/news?product=${productCode}&days=60&limit=6` : null
+  );
   const { data: policies } = useApi<Policy[]>(
-    productId ? `/api/policies?product=tomato&days=720` : null
+    productId ? `/api/policies?product=${productCode}&days=720` : null
   );
 
   return (
@@ -63,6 +64,15 @@ export default function HomePage() {
           summary
             ? `数据更新至 ${summary.as_of} · 基于 ${summary.market_coverage} 个监测市场`
             : "整合价格、天气、政策、新闻、种植面积五大维度，给出可解释的预测"
+        }
+        action={
+          products?.length ? (
+            <ProductPicker
+              products={products}
+              value={productId}
+              onChange={setProductId}
+            />
+          ) : null
         }
       />
 
